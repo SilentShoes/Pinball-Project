@@ -14,7 +14,7 @@ while (gameActive = 1)      //Signal recieved from button
 {
     if(bumperHitBit = 1)      // Normal bumper is hit
         {
-            currentScore + 100 * multiplier;
+            100 * multiplier = currentScore;
         }
     
     if(bumper1Bit = 1,bumper2Bit = 1,bumper3Bit = 1,bumper4Bit)      // Certain bumpers hit increases multiplier
