@@ -1,28 +1,35 @@
-int currentScore = 0;
-int highScore = 0;
-int multiplier = 1;
-int lives = 1;
-int bumperHitBit = 0;
-int drainBit = 0;
+bool gameActive = 0;
+unsigned int currentScore = 0;
+unsigned int highScore1 = 0;
+unsigned int multiplier = 1;
+bool bumperHitBit = 0;
+bool drainBit = 0;
 
-while (gameactive = 1)      //Signal recieved from button
+while (gameActive = 1)      //Signal recieved from button
 
 {
-    if(bumperHitBit = 1)       // Normal bumper is hit
+    if(bumperHitBit == 1)       // Normal bumper is hit
         {
-            score + 100 * multiplier;
+            currentScore = currentScore + (100 * multiplier);
         }
-        
-    if(10 secs pass)    //Every 10 seconds increase multiplier by 1
+    if(10 secs pass)    //Needs interrupt
         {
             multiplier++;
         }
-        
-    if(drainBit = 1)         //Drain hit, game over
+    if(drainBit == 1)         //Drain hit, game over
         {
             gameActive = 0;
         }
 }
 
-currentScore = highScore            //Keep high scores, save to certain variable
+while (gameActive = 0)
 
+{  
+    if(currentScore > highScore1)    //Keep high scores, save to certain variable
+    
+        {
+            currentScore = highScore;   //Save high score
+                                        //Push to scoreboard
+            currentScore = 0;           //Reset score
+        }
+}
