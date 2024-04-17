@@ -1,6 +1,6 @@
 bool gameActive = 0;
 unsigned int currentScore = 0;
-unsigned int highScore2 = 0;
+unsigned int highScoreTITC = 0;
 unsigned int multiplier = 0;
 unsigned int lives = 3;
 bool drainBit = 0;
@@ -32,7 +32,7 @@ while (gameActive == 0)
 {
     if(currentScore > highScore2)
         {
-            currentScore = highScore;       //Save high score
+            currentScore = highScoreTITC;       //Save high score
                                             //Push to scoreboard
             currentScore = 0;              //Reset score
         }
