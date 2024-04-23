@@ -12,6 +12,7 @@ while (gameActive == 1)      //Signal recieved from button
     if(bumperHitBit == 1)      // Bumper 1 is hit
         {
             currentScore = currentScore + (100 * multiplier);
+            bumperHitBit = 0;
         }
     if(multiplier == 1)      // Certain bumpers hit increases multiplier
         {
