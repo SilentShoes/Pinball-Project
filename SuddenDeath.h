@@ -11,7 +11,7 @@ while (gameActive = 1)      //Signal recieved from button
     if(bumperHitBit == 1)       // Normal bumper is hit
         {
             currentScore = currentScore + (100 * multiplier);
-            bumperHitBit=0;
+            bumperHitBit = 0;
         }
     if(10 secs pass)    //Needs interrupt
         {
