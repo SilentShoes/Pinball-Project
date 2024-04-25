@@ -33,7 +33,7 @@ unsigned char databyte;
   
 }
 
-
+// Interrupt for sending data
 #pragma vector=USCIAB0TX_VECTOR
 __interrupt void USCI_TX_ISR(void)
 {
