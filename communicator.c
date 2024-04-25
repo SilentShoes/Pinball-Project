@@ -131,7 +131,6 @@ void MessageReceiver( void )
 
 void SendMessage(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4)
 {
-    ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
     ringbuffer8b_enqueue(&tx_data_rb, byte1);
     ringbuffer8b_enqueue(&tx_data_rb, byte2);
     ringbuffer8b_enqueue(&tx_data_rb, byte3);
