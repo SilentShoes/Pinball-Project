@@ -8,6 +8,12 @@ RingBuffer8b_TypeDef payload_data;
 unsigned char consumer_state = 0;
 unsigned char producer_state = 0;
 
+unsigned int addressScore1;
+unsigned int addressLights2;
+unsigned int addressMusic33;
+unsigned int addressSensors4;
+unsigned int addressFlippers5;
+
 void MessageReceiver( void )
 { 
   unsigned char data;
@@ -18,18 +24,24 @@ void MessageReceiver( void )
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-          consumer_state = 0x01;
-        }
+            if(data == 0xE3)
+            {
+                consumer_state = 0x01;
+            }
           else 
         {
             consumer_state = 0;
         }
+       
         break;          
     case 1:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-          consumer_state = 0x02;
+            if(data == myAddress)
+            {
+                consumer_state = 0x02;
+            }
         }
         else 
         {
@@ -40,7 +52,10 @@ void MessageReceiver( void )
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           ringbuffer8b_dequeue(&rx_data_rb);
-          consumer_state = 0x03;
+            if(data == 0x0)
+            {
+                consumer_state = 0x03;
+            }
         }
           else 
         {
@@ -123,7 +138,42 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;  
+        break;
+    case 10:    
+        if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
+        {
+          data = ringbuffer8b_dequeue(&rx_data_rb);
+          consumer_state = 0x0B;
+        }
+          else 
+        {
+            consumer_state = 0;
+        }
+        break;
+    case 11:    
+        if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
+        {
+          data = ringbuffer8b_dequeue(&rx_data_rb);
+            if(data == checksum)
+            {
+                consumer_state = 0x0C;
+            }
+        }
+          else 
+        {
+            consumer_state = 0;
+        }
+        break;
+    case 12:    
+        if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
+        {
+          data = ringbuffer8b_dequeue(&rx_data_rb);
+            if(data == 0xE3)
+            {
+            consumer_state = 0;
+            }
+        }
+        break;
     }
     
 }
