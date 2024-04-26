@@ -179,12 +179,22 @@ void MessageReceiver( void )
 }
 
 
-void SendMessage(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4)
+void SendMessage(unsigned char byte1, unsigned char byte2, byte3, )
 {
-    ringbuffer8b_enqueue(&tx_data_rb, byte1);
-    ringbuffer8b_enqueue(&tx_data_rb, byte2);
-    ringbuffer8b_enqueue(&tx_data_rb, byte3);
-    ringbuffer8b_enqueue(&tx_data_rb, byte4);
+    ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
+    ringbuffer8b_enqueue(&tx_data_rb, ); //Destination address
+    ringbuffer8b_enqueue(&tx_data_rb, 0x00);
+    ringbuffer8b_enqueue(&tx_data_rb, gamemode_code);
+    ringbuffer8b_enqueue(&tx_data_rb, active_flag);
+    ringbuffer8b_enqueue(&tx_data_rb, ball_lost_flag);
+    ringbuffer8b_enqueue(&tx_data_rb, ten_sec_flag);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte_1);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte_2);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte_3);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte_4);
+    ringbuffer8b_enqueue(&tx_data_rb, checksum);
+    ringbuffer8b_enqueue(&tx_data_rb, 0x3E;
+
   
      IE2 |= UCA0TXIE;     // Enable Transmit Register Empty Interrupt
 }
