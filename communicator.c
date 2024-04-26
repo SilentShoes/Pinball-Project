@@ -8,11 +8,13 @@ RingBuffer8b_TypeDef payload_data;
 unsigned char consumer_state = 0;
 unsigned char producer_state = 0;
 
-unsigned int addressScore1;
-unsigned int addressLights2;
-unsigned int addressMusic33;
-unsigned int addressSensors4;
-unsigned int addressFlippers5;
+unsigned char addressScore = 0x01;
+unsigned char addressLights = 0x02;
+unsigned char addressMusic = 0x03;
+unsigned char addressSensors = 0x04;
+unsigned char addressFlippers = 0x05;
+unsigned char addressBumpers = 0x06;
+unsigned char addressPlunger = 0x07;
 
 void MessageReceiver( void )
 { 
