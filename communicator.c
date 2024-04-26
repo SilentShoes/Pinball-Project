@@ -17,99 +17,139 @@ unsigned int addressFlippers5;
 void MessageReceiver( void )
 { 
   unsigned char data;
-
+  unsigned char local_checksum;
   switch(consumer_state)
   {
-    case 0:     // SOM
+    // Start bit
+    case 0:
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-            if(data == 0xE3)
-            {
-                consumer_state = 0x01;
-            }
+          local_checksum += data;
+          if(data == 0xE3)
+          {
+            consumer_state = 0x01;
+          }
           else 
-        {
+          {
             consumer_state = 0;
-        }
-       
+          }
         break;          
+        }
+
+    //Destination address check
     case 1:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-            if(data == myAddress)
-            {
-                consumer_state = 0x02;
-            }
+          local_checksum += data;
+          if(data == myAddress)
+          {
+            consumer_state = 0x02;
+          }
         }
         else 
         {
             consumer_state = 0;
         }
         break;   
+
+    // Function byte for future proofing
     case 2:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
-          ringbuffer8b_dequeue(&rx_data_rb);
-            if(data == 0x0)
-            {
-                consumer_state = 0x03;
-            }
+          data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
+          if(data == 0x0)
+          {
+            consumer_state = 0x03;
+          }
         }
           else 
         {
             consumer_state = 0;
         }
         break;  
+
+    // Gamemode code
+    // 0x01: Timer mode
+    // 0x02: 3-in-the-chamber
     case 3:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x04;
+
+          // Do something
+
         }
           else 
         {
             consumer_state = 0;
         }
         break;  
-     case 4:    
+
+    // Active game flag. Used to start timer after gamemode selection
+    // 0x00: Game off
+    // 0x01: Game active
+    case 4:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x05;
+
+          // Do something
+
         }
           else 
         {
             consumer_state = 0;
         }
         break;   
-    case 5:    
+
+      // Ball lost flag.
+      case 5:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x06;
+
+          // Do something
+
         }
           else 
         {
             consumer_state = 0;
         }
         break;  
-    case 6:    
+
+      // 10 seconds of timer remaining flag
+      case 6:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x07;
+
+          // Do something
+
         }
           else 
         {
             consumer_state = 0;
         }
         break;  
-     case 7:    
+      
+      // Score data byte 1
+      // Bits 1-8
+      case 7:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x08;
         }
           else 
@@ -117,10 +157,14 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;   
-    case 8:    
+
+      // Score data byte 2
+      // Bits 9-16
+      case 8:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x09;
         }
           else 
@@ -128,10 +172,14 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;  
-    case 9:    
+      
+      // Score data byte 3
+      // Bits 17-24
+      case 9:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x0A;
         }
           else 
@@ -139,10 +187,14 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;
+
+    // Score data byte 4
+    // Bits 25-32
     case 10:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
+          local_checksum += data;
           consumer_state = 0x0B;
         }
           else 
@@ -150,20 +202,24 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;
+    
+    // Local checksum verification
     case 11:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-            if(data == checksum)
-            {
-                consumer_state = 0x0C;
-            }
+          if(data == local_checksum)
+          {
+            consumer_state = 0x0C;
+          }
         }
           else 
         {
             consumer_state = 0;
         }
         break;
+
+    // Stop byte
     case 12:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -179,19 +235,20 @@ void MessageReceiver( void )
 }
 
 
-void SendMessage(unsigned char byte1, unsigned char byte2, byte3, )
+void SendMessage(unsigned char dest_address, unsigned char gamemode, unsigned char active_flag, unsigned char ball_lost_flag, unsigned char ten_sec_flag,
+unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3, unsigned char score_byte4, unsigned char checksum)
 {
     ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
-    ringbuffer8b_enqueue(&tx_data_rb, ); //Destination address
+    ringbuffer8b_enqueue(&tx_data_rb, dest_address); //Destination address
     ringbuffer8b_enqueue(&tx_data_rb, 0x00);
-    ringbuffer8b_enqueue(&tx_data_rb, gamemode_code);
+    ringbuffer8b_enqueue(&tx_data_rb, gamemode);
     ringbuffer8b_enqueue(&tx_data_rb, active_flag);
     ringbuffer8b_enqueue(&tx_data_rb, ball_lost_flag);
     ringbuffer8b_enqueue(&tx_data_rb, ten_sec_flag);
-    ringbuffer8b_enqueue(&tx_data_rb, score_byte_1);
-    ringbuffer8b_enqueue(&tx_data_rb, score_byte_2);
-    ringbuffer8b_enqueue(&tx_data_rb, score_byte_3);
-    ringbuffer8b_enqueue(&tx_data_rb, score_byte_4);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte1);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte2);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte3);
+    ringbuffer8b_enqueue(&tx_data_rb, score_byte4);
     ringbuffer8b_enqueue(&tx_data_rb, checksum);
     ringbuffer8b_enqueue(&tx_data_rb, 0x3E;
 
