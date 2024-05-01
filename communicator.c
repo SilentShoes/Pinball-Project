@@ -126,26 +126,24 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;  
-
-      // 10 seconds of timer remaining flag
+      
+      // Score data byte 1
+      // Bits 1-8
       case 6:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
           local_checksum += data;
           consumer_state = 0x07;
-
-          // Do something
-
         }
           else 
         {
             consumer_state = 0;
         }
-        break;  
-      
-      // Score data byte 1
-      // Bits 1-8
+        break;   
+
+      // Score data byte 2
+      // Bits 9-16
       case 7:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -157,10 +155,10 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;   
-
-      // Score data byte 2
-      // Bits 9-16
+        break;  
+      
+      // Score data byte 3
+      // Bits 17-24
       case 8:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -172,11 +170,11 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;  
-      
-      // Score data byte 3
-      // Bits 17-24
-      case 9:    
+        break;
+
+    // Score data byte 4
+    // Bits 25-32
+    case 9:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -188,30 +186,15 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;
-
-    // Score data byte 4
-    // Bits 25-32
-    case 10:    
-        if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
-        {
-          data = ringbuffer8b_dequeue(&rx_data_rb);
-          local_checksum += data;
-          consumer_state = 0x0B;
-        }
-          else 
-        {
-            consumer_state = 0;
-        }
-        break;
     
     // Local checksum verification
-    case 11:    
+    case 10:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
           if(data == local_checksum)
           {
-            consumer_state = 0x0C;
+            consumer_state = 0x0B;
           }
         }
           else 
@@ -221,7 +204,7 @@ void MessageReceiver( void )
         break;
 
     // Stop byte
-    case 12:    
+    case 11:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -244,8 +227,7 @@ unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3,
     ringbuffer8b_enqueue(&tx_data_rb, 0x00);
     ringbuffer8b_enqueue(&tx_data_rb, gamemode);
     ringbuffer8b_enqueue(&tx_data_rb, active_flag);
-    ringbuffer8b_enqueue(&tx_data_rb, ball_lost_flag);
-    ringbuffer8b_enqueue(&tx_data_rb, ten_sec_flag);
+    ringbuffer8b_enqueue(&tx_data_rb, lives);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte1);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte2);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte3);
