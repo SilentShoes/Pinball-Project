@@ -1,4 +1,3 @@
-
 extern gameActive;
 extern currentScore;
 extern highScoreTITC;
