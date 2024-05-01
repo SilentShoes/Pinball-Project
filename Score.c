@@ -1,7 +1,6 @@
 bool gameActive = 0;
 unsigned int currentScore = 0;
 unsigned int highScoreTITC = 0;
-unsigned int highScoreSD = 0;
 unsigned int multiplier = 0;
 unsigned int lives = 3;
 bool drainBit = 0;
