@@ -219,7 +219,7 @@ void MessageReceiver( void )
 }
 
 
-void SendMessage(unsigned char dest_address, unsigned char gamemode, unsigned char active_flag, unsigned char ball_lost_flag, unsigned char ten_sec_flag,
+void SendMessage(unsigned char dest_address, unsigned char gamemode, unsigned char active_flag, unsigned char lives,
 unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3, unsigned char score_byte4, unsigned char checksum)
 {
     ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
