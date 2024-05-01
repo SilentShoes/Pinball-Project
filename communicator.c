@@ -8,6 +8,7 @@ RingBuffer8b_TypeDef payload_data;
 unsigned char consumer_state = 0;
 unsigned char producer_state = 0;
 
+/* Function address
 unsigned char addressScore = 0x01;
 unsigned char addressLights = 0x02;
 unsigned char addressMusic = 0x03;
@@ -15,6 +16,7 @@ unsigned char addressSensors = 0x04;
 unsigned char addressFlippers = 0x05;
 unsigned char addressBumpers = 0x06;
 unsigned char addressPlunger = 0x07;
+*/
 
 void MessageReceiver( void )
 { 
@@ -27,9 +29,9 @@ void MessageReceiver( void )
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
-          local_checksum += data;
           if(data == 0xE3)
           {
+            local_checksum += data;
             consumer_state = 0x01;
           }
           else 
@@ -56,26 +58,22 @@ void MessageReceiver( void )
         }
         break;   
 
-    // Function byte for future proofing
+    // Function byte
+    // If 0, score is ongoing score. If 1, the score is the high score
     case 2:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
           local_checksum += data;
-          if(data == 0x0)
-          {
-            consumer_state = 0x03;
-          }
-        }
-          else 
+          consumer_state = 0x03;
+        } 
+        else
         {
-            consumer_state = 0;
+          break;  
         }
-        break;  
-
+          
     // Gamemode code
-    // 0x01: Timer mode
-    // 0x02: 3-in-the-chamber
+    // Unused for now - little time left
     case 3:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -84,7 +82,7 @@ void MessageReceiver( void )
           consumer_state = 0x04;
 
           // Do something
-
+          
         }
           else 
         {
