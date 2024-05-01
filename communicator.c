@@ -2,6 +2,7 @@
 #include "msp430.h"
 #include "serial.h"
 #include "ring_buffer8.h"                
+#include "score.h"
 
 RingBuffer8b_TypeDef payload_data;
 
