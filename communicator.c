@@ -9,16 +9,6 @@ RingBuffer8b_TypeDef payload_data;
 unsigned char consumer_state = 0;
 unsigned char producer_state = 0;
 
-/* Function address
-unsigned char addressScore = 0x01;
-unsigned char addressLights = 0x02;
-unsigned char addressMusic = 0x03;
-unsigned char addressSensors = 0x04;
-unsigned char addressFlippers = 0x05;
-unsigned char addressBumpers = 0x06;
-unsigned char addressPlunger = 0x07;
-*/
-
 void MessageReceiver( void )
 { 
   unsigned char data;
@@ -27,6 +17,7 @@ void MessageReceiver( void )
   {
     // Start bit
     case 0:
+        local_checksum = ""; // Unsure if this is how you'd clear a variable
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -64,17 +55,20 @@ void MessageReceiver( void )
     case 2:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
-          data = ringbuffer8b_dequeue(&rx_data_rb);
-          local_checksum += data;
-          consumer_state = 0x03;
+            data = ringbuffer8b_dequeue(&rx_data_rb);
+            local_checksum += data;
+            consumer_state = 0x03;
         } 
-        else
+        else 
         {
-          break;  
+            consumer_state = 0;
         }
-          
-    // Gamemode code
-    // Unused for now - little time left
+        break;
+        
+
+    // Active game flag. Used to start timer after gamemode selection
+    // 0x00: Game off
+    // 0x01: Game active
     case 3:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -83,18 +77,16 @@ void MessageReceiver( void )
           consumer_state = 0x04;
 
           // Do something
-          
+
         }
           else 
         {
             consumer_state = 0;
         }
-        break;  
+        break;   
 
-    // Active game flag. Used to start timer after gamemode selection
-    // 0x00: Game off
-    // 0x01: Game active
-    case 4:    
+      // Lives remaining
+      case 4:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -108,27 +100,25 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;   
-
-      // Ball lost flag.
+        break;  
+      
+      // Score data byte 1
+      // Bits 1-8
       case 5:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
           local_checksum += data;
           consumer_state = 0x06;
-
-          // Do something
-
         }
           else 
         {
             consumer_state = 0;
         }
-        break;  
-      
-      // Score data byte 1
-      // Bits 1-8
+        break;   
+
+      // Score data byte 2
+      // Bits 9-16
       case 6:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -140,10 +130,10 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;   
-
-      // Score data byte 2
-      // Bits 9-16
+        break;  
+      
+      // Score data byte 3
+      // Bits 17-24
       case 7:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
@@ -155,11 +145,11 @@ void MessageReceiver( void )
         {
             consumer_state = 0;
         }
-        break;  
-      
-      // Score data byte 3
-      // Bits 17-24
-      case 8:    
+        break;
+
+    // Score data byte 4
+    // Bits 25-32
+    case 8:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -171,30 +161,15 @@ void MessageReceiver( void )
             consumer_state = 0;
         }
         break;
-
-    // Score data byte 4
-    // Bits 25-32
-    case 9:    
-        if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
-        {
-          data = ringbuffer8b_dequeue(&rx_data_rb);
-          local_checksum += data;
-          consumer_state = 0x0A;
-        }
-          else 
-        {
-            consumer_state = 0;
-        }
-        break;
     
     // Local checksum verification
-    case 10:    
+    case 9:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
           if(data == local_checksum)
           {
-            consumer_state = 0x0B;
+            consumer_state = 0x0A;
           }
         }
           else 
@@ -204,7 +179,7 @@ void MessageReceiver( void )
         break;
 
     // Stop byte
-    case 11:    
+    case 10:    
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -219,22 +194,21 @@ void MessageReceiver( void )
 }
 
 
-void SendMessage(unsigned char dest_address, unsigned char gamemode, unsigned char active_flag, unsigned char lives,
-unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3, unsigned char score_byte4, unsigned char checksum)
+void SendMessage(unsigned char dest_address, unsigned char function_flag, unsigned char active_flag, unsigned char lives,
+unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3, unsigned char score_byte4)
 {
+    chk = dest_address + function_flag + active_flag + lives + score_byte1 + score_byte2 + score_byte3 + score_byte4;
     ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
     ringbuffer8b_enqueue(&tx_data_rb, dest_address); //Destination address
-    ringbuffer8b_enqueue(&tx_data_rb, 0x00);
-    ringbuffer8b_enqueue(&tx_data_rb, gamemode);
+    ringbuffer8b_enqueue(&tx_data_rb, function_flag); //Function 
     ringbuffer8b_enqueue(&tx_data_rb, active_flag);
     ringbuffer8b_enqueue(&tx_data_rb, lives);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte1);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte2);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte3);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte4);
-    ringbuffer8b_enqueue(&tx_data_rb, checksum);
+    ringbuffer8b_enqueue(&tx_data_rb, chk);
     ringbuffer8b_enqueue(&tx_data_rb, 0x3E;
-
   
      IE2 |= UCA0TXIE;     // Enable Transmit Register Empty Interrupt
 }
