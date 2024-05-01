@@ -1,5 +1,4 @@
 extern gameActive;
 extern currentScore;
-extern highScoreTITC;
+extern highScore;
 extern lives;
-extern gameMode;
