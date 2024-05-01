@@ -16,7 +16,7 @@ unsigned char addressBumpers = 0x06;
 unsigned char addressPlunger = 0x07;
 */
 
-while (game_active == 1)      //Signal recieved from button
+while (gameActive == 1)      //Signal recieved from button
 
 {
     if(bumperHitBit == 1)      // Bumper 1 is hit
