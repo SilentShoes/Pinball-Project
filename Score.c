@@ -1,5 +1,6 @@
 //score.c
 #include "communicator.h"
+#include "score.h"
 
 bool gameActive = 0;
 unsigned int currentScore = 0;
