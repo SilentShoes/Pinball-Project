@@ -1,5 +1,5 @@
 #include <msp430.h>
-#include "ring_buffer8.h"
+#include "ringbuffer8.h"
 
 RingBuffer8b_TypeDef my_rb8b;
 
