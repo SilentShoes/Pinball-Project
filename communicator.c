@@ -8,6 +8,7 @@ RingBuffer8b_TypeDef payload_data;
 
 unsigned char consumer_state = 0;
 unsigned char producer_state = 0;
+unsigned char chk;
 
 void MessageReceiver( void )
 { 
@@ -17,7 +18,7 @@ void MessageReceiver( void )
   {
     // Start bit
     case 0:
-        local_checksum = ""; // Unsure if this is how you'd clear a variable
+        local_checksum = 0; // Unsure if this is how you'd clear a variable
         if(ringbuffer8b_isempty(&rx_data_rb) == FALSE)
         {
           data = ringbuffer8b_dequeue(&rx_data_rb);
@@ -197,7 +198,7 @@ void MessageReceiver( void )
 void SendMessage(unsigned char dest_address, unsigned char function_flag, unsigned char active_flag, unsigned char lives,
 unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3, unsigned char score_byte4)
 {
-    chk = dest_address + function_flag + active_flag + lives + score_byte1 + score_byte2 + score_byte3 + score_byte4;
+    chk = 0 + dest_address + function_flag + active_flag + lives + score_byte1 + score_byte2 + score_byte3 + score_byte4;
     ringbuffer8b_enqueue(&tx_data_rb, 0xE3);
     ringbuffer8b_enqueue(&tx_data_rb, dest_address); //Destination address
     ringbuffer8b_enqueue(&tx_data_rb, function_flag); //Function 
