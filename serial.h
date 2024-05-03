@@ -1,7 +1,7 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
-#include "..\..\MODULES\ring_buffer8.h"
+#include "ring_buffer8.h"
 
 
 // PUBLIC FUNCTION PROTOTYPES
