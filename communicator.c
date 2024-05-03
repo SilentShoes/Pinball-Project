@@ -1,7 +1,7 @@
 // communicator.c 
 #include "msp430.h"
 #include "serial.h"
-#include "ring_buffer8.h"                
+#include "ringbuffer8.h"                
 #include "score.h"
 
 RingBuffer8b_TypeDef payload_data;
@@ -208,7 +208,7 @@ unsigned char score_byte1, unsigned char score_byte2, unsigned char score_byte3,
     ringbuffer8b_enqueue(&tx_data_rb, score_byte3);
     ringbuffer8b_enqueue(&tx_data_rb, score_byte4);
     ringbuffer8b_enqueue(&tx_data_rb, chk);
-    ringbuffer8b_enqueue(&tx_data_rb, 0x3E;
+    ringbuffer8b_enqueue(&tx_data_rb, 0x3E);
   
      IE2 |= UCA0TXIE;     // Enable Transmit Register Empty Interrupt
 }
