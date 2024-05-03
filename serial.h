@@ -12,3 +12,4 @@ unsigned char sendByte(unsigned char databyte);
 extern RingBuffer8b_TypeDef rx_data_rb;   
 extern RingBuffer8b_TypeDef tx_data_rb;   
 
+#endif
